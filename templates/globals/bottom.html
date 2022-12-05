@@ -1,0 +1,13 @@
+{{define "globals/bottom.html"}}
+        <script src="/assets/js/jquery.min.js"></script>
+        <script src="/assets/js/bootstrap.min.js"></script>
+        <script src="/assets/js/scripts.js"></script>
+        <script>
+            $(document).ready(() => {
+                addActive("{{.page}}")
+                setStatusBtn("{{.id}}")
+            })
+        </script>
+    </body>
+</html>
+{{end}}

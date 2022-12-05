@@ -1,0 +1,131 @@
+{{define "server/server.html"}}
+    {{template "globals/top.html" .}}
+		<div class="col-md-8">
+			<h3>
+				Server #{{.id}}
+			</h3>
+			<div class="btn-group btn-group-lg" role="group">
+                <button id="status_btn" class="btn btn-secondary btn-info" type="button">
+                </button>
+				<button class="btn btn-secondary btn-success" type="button" onclick="execAction('{{.id}}','start')">
+					Start
+				</button> 
+				<button class="btn btn-secondary btn-danger" type="button" onclick="execAction('{{.id}}','stop')">
+					Stop
+				</button>
+          </div>
+          <div class="btn-group btn-group-lg" role="group">
+                <button class="btn btn-secondary btn-warning" type="button" onclick="window.prompt('Enter this command in a terminal to start server at boot (or replace enable with disable to stop starting at boot)','sudo systemctl enable vban@{{.id}}');">
+					Enable/disable start at boot
+				</button>
+			</div>
+			<form role="form" action="modify_args" method="post">
+                 <div class="form-group">
+                    <label for="type">Type:</label>
+                    <select class="form-control" id="type" name="type">
+                        <option selected hidden>{{index .args "type"}}</option>
+                        <option>receptor</option>
+                        <option>emitter</option>
+                    </select>
+                </div> 
+				<div class="form-group">
+                    <input type="hidden" name="nb" value="{{.id}}" />
+					<label for="i">
+						Source/Destination IP
+					</label>
+					<input class="form-control" name="i" id="i" type="text" value="{{index .args "i"}}">
+                    <label for="p">
+						Port (default: 6980)
+					</label>
+                    <input class="form-control" name="p" id="p" type="text" value="{{index .args "p"}}">
+                    <label for="s">
+						Stream name
+					</label>
+                    <input class="form-control" name="s" id="s" type="text" value="{{index .args "s"}}">
+                    <label for="b">
+						Backend (default: alsa, only alsa supported on emitter)
+					</label>
+                    <select class="form-control" id="b" name="b">
+                        {{if index .args "b"}}
+                            <option selected hidden>{{index .args "b"}}</option>
+                            <option>alsa</option>
+                        {{else}}
+                            <option selected>alsa</option>
+                        {{end}}
+                        <option>pulseaudio</option>
+                        <option>jack</option>
+                        <option>pipe</option>
+                        <option>file</option>
+                    </select>
+                    {{if eq (index .args "type") "receptor"}}
+                        <label for="q">
+                            Quality (default: 1)
+                        </label>
+                        <select class="form-control" id="q" name="q">
+                            <option>0</option>
+                            {{if index .args "q"}}
+                                <option selected hidden>{{index .args "q"}}</option>
+                                <option>1</option>
+                            {{else}}
+                                <option selected>1</option>
+                            {{end}}
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                        </select>
+                    {{else if eq (index .args "type") "emitter"}}
+                         <label for="r">
+                            Rate (default: 44100)
+                        </label>
+                        <input class="form-control" name="r" id="r" type="text" value="{{index .args "r"}}">
+                        <label for="n">
+                            Audio device number of channels (default: 2)
+                        </label>
+                        <input class="form-control" name="n" id="n" type="text" value="{{index .args "n"}}">
+                        <label for="f">
+                            Audio device sample format (default: 16I)
+                        </label>
+                        <input class="form-control" name="f" id="f" type="text" value="{{index .args "f"}}">
+                    {{end}}
+                    <label for="c">
+						Channels (optional)
+					</label>
+                    <input class="form-control" name="c" id="c" type="text" value="{{index .args "c"}}">
+                    <label for="d">
+						Audio device (optional)
+					</label>
+                    <input class="form-control" name="d" id="d" type="text" value="{{index .args "d"}}">
+                    <label for="l">
+						Log level (default: 1)
+					</label>
+                    <select class="form-control" id="l" name="l">
+                        <option>0</option>
+                        {{if index .args "l"}}
+                            <option selected hidden>{{index .args "l"}}</option>
+                            <option>1</option>
+                        {{else}}
+                            <option selected>1</option>
+                        {{end}}
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                    </select>
+				</div>
+				<button type="submit" class="btn btn-primary">
+					Change
+				</button>
+                <button type="button" class="btn btn-danger" onclick="execAction('{{.id}}','remove')">
+					Remove
+				</button>
+                <div class="form-group">
+                    <label for="log">Log:</label>
+                    <iframe id="log" src="log?id={{.id}}" style="width:100%;height:250px;border:1px solid rgba(0,0,0,.15);border-radius:.25rem;"></iframe>
+                </div>
+			</form>
+		</div>
+        {{template "globals/bottom.html" .}}
+    </body>
+</html>
+{{end}}
